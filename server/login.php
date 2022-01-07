@@ -1,7 +1,4 @@
 <?php
-ini_set('max_execution_time', 300);
-session_start();
-
 $filedata="C:/Users/whes1015/Desktop/ExpTech/Json/login.json";
 $fp=fopen($filedata,"r");
 $size=filesize($filedata);
@@ -9,9 +6,10 @@ $txt=json_decode(fread($fp,$size),true);
 
 $id=$txt["id"];
 $token=$txt["token"];
-$APIkey=$txt["APIkey"];
 $bot=$txt["bot"];
-$FormatVersion=1;
+
+ini_set('max_execution_time', 300);
+session_start();
 
 define('OAUTH2_CLIENT_ID',$id); 
 define('OAUTH2_CLIENT_SECRET', $token); 
@@ -39,42 +37,11 @@ if(get('code')) {
   header('Location: ' . $_SERVER['PHP_SELF']);
 }
 
-function join_guild($user) 
-{
-    $data = json_encode(array("access_token" => $_SESSION['access_token']));
-    $url = "https://discord.com/api" . "/guilds/926545182407688273/members/" . $user;
-    $headers = array('Content-Type: application/json', 'Authorization: Bot ' . $GLOBALS['bot']);
-    $curl = curl_init();
-    curl_setopt($curl, CURLOPT_URL, $url);
-    curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($curl, CURLOPT_CUSTOMREQUEST, "PUT");
-    curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
-    curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
-    $response = curl_exec($curl);
-    curl_close($curl);
-    $results = json_decode($response, true);
-    print_r($results);
-    return $results;
-}
-
 if(session('access_token')) {
   $user = apiRequest($apiURLBase);
-  echo '<h3>已登入</h3>';
-  echo '<h4>歡迎, ' . $user->username . '</h4>';
-  echo '<pre>';
-  print_r(post('{"APIke":"1"}'));
-    print_r($user->id);
-  echo '</pre>';
-  echo '<p><a href="?action=logout">登出</a></p>';
-  join_guild($user->id);
-} else {
-  echo '<p><a href="?action=login">登入</a></p>' ;
-}
-
-if(get('action') == 'logout') {
-  session_destroy();
-  header('Location: ' . $_SERVER['PHP_SELF']);
-}
+  $_SESSION['user'] = $user;
+  header('Location: index.php'); 
+} 
 
 function apiRequest($url, $post=FALSE, $headers=array()) {
   $ch = curl_init($url);
@@ -82,7 +49,6 @@ function apiRequest($url, $post=FALSE, $headers=array()) {
   curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
 
   $response = curl_exec($ch);
-
 
   if($post)
     curl_setopt($ch, CURLOPT_POSTFIELDS, http_build_query($post));
@@ -105,21 +71,4 @@ function get($key, $default=NULL) {
 function session($key, $default=NULL) {
   return array_key_exists($key, $_SESSION) ? $_SESSION[$key] : $default;
 }
-
- function post($Data){
-$url = "http://150.117.110.118:10150/";    
-$curl = curl_init($url);
-$json=json_decode($Data,true);
-$json["APIkey"]=$GLOBALS["APIkey"];
-$json["FormatVersion"]=$GLOBALS["FormatVersion"];
-$data=json_encode($json);
-curl_setopt($curl, CURLOPT_HEADER, false);
-curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-curl_setopt($curl, CURLOPT_HTTPHEADER, array("Content-type: application/json"));
-curl_setopt($curl, CURLOPT_POST, true);
-curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
-curl_close($curl);
-return curl_exec($curl);
- }
-
 ?> 
