@@ -10,11 +10,11 @@ $APIkey=$txt["APIkey"];
     session_start();
     if (!empty($_SESSION['user'])) {
         $user=$_SESSION['user'];
-        echo '<div class="topcorner"><div class="box"><button type="button" class="standard" onclick="location.href="?action=logout">登出</button></div></div>';
-        echo '<div class="topcorner-2"><div class="box"><button type="button" class="standard" onclick="location.href="?action=block">方塊數據</button></div></div>';
-        echo '<div class="topcorner-3"><div class="box"><button type="button" class="standard" onclick="location.href="?action=economy">經濟玩法</button></div></div>';
+        echo '<div class="topcorner"><div class="box"><button type="button" class="standard" onclick="location.href="?action=logout"">登出</button></div></div>';
+        echo '<div class="topcorner-2"><div class="box"><button type="button" class="standard" onclick="location.href="?action=block"">方塊數據</button></div></div>';
+        echo '<div class="topcorner-3"><div class="box"><button type="button" class="standard" onclick="location.href="?action=economy"">經濟玩法</button></div></div>';
     }else{
-        echo '<div class="topcorner"><div class="box"><button type="button" class="standard" onclick="location.href="?action=login">登入</button></div></div>';
+        echo '<div class="topcorner"><div class="box"><button type="button" class="standard" onclick="location.href="?action=login"">登入</button></div></div>';
     }
 
     if(get('action') == 'login') {
@@ -55,7 +55,6 @@ $APIkey=$txt["APIkey"];
             font-family: sans-serif;
             margin: 50px ;
             font-size: larger;
-            background-image:url('../../Downloads/homebg.png') ;
             border-radius: 10px;
         }
         .container{
