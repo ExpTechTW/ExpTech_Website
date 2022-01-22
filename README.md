@@ -19,8 +19,10 @@
 </p>
 
 ## 項目概要
-* Spigot 插件 官方網站
+- [網站](https://exptech.mywire.org/server/)
+* ExpTech 插件 官方網站
 
 ## 貢獻者
 - 程式開發
   - whes1015
+  - smile-minecraft
