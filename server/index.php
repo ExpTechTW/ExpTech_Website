@@ -6,16 +6,15 @@ $size=filesize($filedata);
 $txt=json_decode(fread($fp,$size),true);
 
 $APIkey=$txt["APIkey"];
-$FormatVersion=1;
 
     session_start();
     if (!empty($_SESSION['user'])) {
         $user=$_SESSION['user'];
-        echo '<div class="topcorner"><div class="box"><button type="button" class="standard" onclick="location.href='?action=logout'">登出</button></div></div>';
-        echo '<div class="topcorner-2"><div class="box"><button type="button" class="standard" onclick="location.href='?action=block'">方塊數據</button></div></div>';
-        echo '<div class="topcorner-3"><div class="box"><button type="button" class="standard" onclick="location.href='?action=economy'">經濟玩法</button></div></div>';
+        echo '<div class="topcorner"><div class="box"><button type="button" class="standard" onclick="location.href="?action=logout">登出</button></div></div>';
+        echo '<div class="topcorner-2"><div class="box"><button type="button" class="standard" onclick="location.href="?action=block">方塊數據</button></div></div>';
+        echo '<div class="topcorner-3"><div class="box"><button type="button" class="standard" onclick="location.href="?action=economy">經濟玩法</button></div></div>';
     }else{
-        echo '<div class="topcorner"><div class="box"><button type="button" class="standard" onclick="location.href='?action=login'">登入</button></div></div>';
+        echo '<div class="topcorner"><div class="box"><button type="button" class="standard" onclick="location.href="?action=login">登入</button></div></div>';
     }
 
     if(get('action') == 'login') {
@@ -88,53 +87,5 @@ $FormatVersion=1;
     <div class="standard">
         <h1>探索科技<br>Exptech</h1>
     </div>
-<?php
-if(empty($user)) return;
-echo '<table class="table table-bordered table-striped table-condensed"><tr><td>名稱</td><td>數量</td></tr>';
-
-$Data=post('{"Function":"serverData","Type":"BlockValue"}')["response"];
-for ($x=0; $x<count($Data); $x++) {
-    $name=BlockDecoder($Data[$x]["name"]);
-    $value=$Data[$x]["value"];
-    echo '<tr><td>'.$name.'<td><td>'.$value.'<td></tr>';
-  } 
-  echo '</table>';
-
-function post($Data){
-    $url = "http://150.117.110.118:10150/";    
-    $curl = curl_init($url);
-    $json=json_decode($Data,true);
-    $json["APIkey"]=$GLOBALS["APIkey"];
-    $json["FormatVersion"]=$GLOBALS["FormatVersion"];
-    $data=json_encode($json);
-    curl_setopt($curl, CURLOPT_HEADER, false);
-    curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($curl, CURLOPT_HTTPHEADER, array("Content-type: application/json"));
-    curl_setopt($curl, CURLOPT_POST, true);
-    curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
-    curl_close($curl);
-    return json_decode(curl_exec($curl),true);
-     }
-
-     function BlockDecoder($Data){
-        $url = "https://raw.githubusercontent.com/ExpTechTW/API/%E4%B8%BB%E8%A6%81%E7%9A%84-(main)/Json/BlockDecoder";
-        $curl = curl_init($url);
-        curl_setopt($curl, CURLOPT_URL, $url);
-        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-        $headers = array(
-           "Accept: application/json",
-        );
-        curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
-        curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
-        curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
-        curl_close($curl);
-        $data=json_decode(curl_exec($curl),true);
-        if(empty($data[$Data])){
-            return $Data;
-        }else{
-            return $data[$Data];
-        }
-     }
-?>
 </body>
 </html>
