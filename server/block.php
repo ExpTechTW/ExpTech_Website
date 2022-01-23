@@ -75,6 +75,7 @@ function post($Data){
         curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
         curl_close($curl);
         $data=json_decode(curl_exec($curl),true);
+        $GLOBALS["BlockDecoder"]=$data;
         if(empty($data[$Data])){
             return $Data;
         }else{
@@ -82,6 +83,35 @@ function post($Data){
         }
     }else{
         if(empty($GLOBALS["BlockDecoder"][$Data])){
+            $url = "https://discord.com/api/webhooks/934735429939392522/OFACH06MbCAVCmehjQUIsXwCWcklpjeFVT6vCqx1kzZrMkWJxQGcdkq1s8zvTXE6LvWJ";    
+                $curl = curl_init($url);
+                $json=json_decode('{
+                    "username": "ExpTech | 探索科技",
+                    "avatar_url": "https://res.cloudinary.com/dh1luzdfd/image/upload/v1635819265/received_451346186125589_ii1lft.jpg",
+                    "embeds": [
+                      {
+                        "author": {
+                          "name": "📢自動反饋"
+                        },
+                        "title": "BlockDecoder",
+                        "description": "",
+                        "color": 4629503,
+                        "footer": {
+                          "text": "ExpTech 提供技術支持",
+                          "icon_url": "https://res.cloudinary.com/dh1luzdfd/image/upload/v1635819265/received_451346186125589_ii1lft.jpg"
+                        }
+                      }
+                    ]
+                  }',true);
+                $json["embeds"][0]["description"]=$Data;
+                $data=json_encode($json);
+                curl_setopt($curl, CURLOPT_HEADER, false);
+                curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+                curl_setopt($curl, CURLOPT_HTTPHEADER, array("Content-type: application/json"));
+                curl_setopt($curl, CURLOPT_POST, true);
+                curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
+                curl_close($curl);
+                curl_exec($curl);
             return $Data;
         }else{
             return $GLOBALS["BlockDecoder"][$Data];

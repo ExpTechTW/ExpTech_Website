@@ -10,7 +10,6 @@ if(empty($_SESSION['user'])){
     header('Location: /server/'); 
 }
 $user=$_SESSION['user'];
-$BlockDecoder=null;
 
 ?>
 <head>
