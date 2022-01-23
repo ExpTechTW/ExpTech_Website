@@ -45,40 +45,18 @@ $BlockDecoder=null;
     echo '<input type="Submit">';
     echo '</form>';
 }else if(!empty(get('select'))){
-    
+    header('Location: shop.php?action='.get('select'));
 }else{
     echo '<p><a href="?action=sign">簽到</a></p>';
     echo '<p><a href="?action=shop">商城</a></p>';
     $Data=post('{"Function":"economy","FormatVersion":1,"Type":"assets","Value":"'.$GLOBALS["user"]->id.'"}');
+    if($Data["response"]!="No Player assets Data Found"){
     echo '積分: '.$Data["addition"]["integral"].' 金幣: '.$Data["addition"]["coin"].'<br>';
-    Inventory();
+    }
 }
 
 function get($key, $default=NULL) {
     return array_key_exists($key, $_GET) ? $_GET[$key] : $default;
-}
-
-function Inventory(){
-        $Data=post('{"Function":"serverData","FormatVersion":1,"Type":"Inventory","Value":"'.$GLOBALS["user"]->id.'"}');
-        echo '物品欄<br><br>';
-        echo '<table class="table table-bordered table-striped table-condensed"><tr><td>格子編號</td><td>物品</td><td>數量</td></tr>';
-        for ($x=0; $x<9; $x++) {
-            $name=BlockDecoder($Data["response"][$x]["item"]);
-            $value=$Data["response"][$x]["amount"];
-            $y=$x+1;
-            echo '<tr><td>'.$y.'<td><td>'.$name.'<td><td>'.$value.'<td></tr>';
-          } 
-          echo '</table>';
-          echo '<br>背包<br>';
-          echo '<table class="table table-bordered table-striped table-condensed"><tr><td>格子編號</td><td>物品</td><td>數量</td></tr>';
-        for ($x=9; $x<count($Data["response"]); $x++) {
-            if($x>35) break;
-            $name=BlockDecoder($Data["response"][$x]["item"]);
-            $value=$Data["response"][$x]["amount"];
-            $y=$x+1;
-            echo '<tr><td>'.$y.'<td><td>'.$name.'<td><td>'.$value.'<td></tr>';
-        } 
-        echo '<br>最後更新時間: '.$Data["addition"]["InventoryTime"];
 }
 
 function main($Data){
@@ -99,41 +77,12 @@ function post($Data){
     curl_close($curl);
     $res=json_decode(curl_exec($curl),true);
     //print_r($res);
-    if($res["state"]=="Success"){
+    if($res["state"]=="Success"||$res["state"]=="Warn"){
         return $res;
     }else{
-        //header('Location: /exptech/error.php?Function=post&Info='.$res["response"]);
+        header('Location: /exptech/error.php?Function=post&Info='.$res["response"]);
     }
 }
-
-function BlockDecoder($Data){
-    if($GLOBALS["BlockDecoder"]==null){
-    $url = "https://raw.githubusercontent.com/ExpTechTW/API/%E4%B8%BB%E8%A6%81%E7%9A%84-(main)/Json/BlockDecoder/zh-Hant-TW.json";
-    $curl = curl_init($url);
-    curl_setopt($curl, CURLOPT_URL, $url);
-    curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
-    $headers = array(
-       "Accept: application/json",
-    );
-    curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
-    curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
-    curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
-    curl_close($curl);
-    $data=json_decode(curl_exec($curl),true);
-    $GLOBALS["BlockDecoder"]=$data;
-    if(empty($data[$Data])){
-        return $Data;
-    }else{
-        return $data[$Data];
-    }
-}else{
-    if(empty($GLOBALS["BlockDecoder"][$Data])){
-        return $Data;
-    }else{
-        return $GLOBALS["BlockDecoder"][$Data];
-    } 
-}
- }
 
 ?>
 </html>
