@@ -26,19 +26,25 @@ $BlockDecoder=null;
 if(get('action') == 'buy') {
     $Data=post('{"Function":"serverData","FormatVersion":1,"ServerUUID":"'.$_SESSION["ServerUUID"].'","Type":"list","Value":"'.$GLOBALS["user"]->id.'"}');
     if($Data["response"]!="No Server list Data Found"){
+        if(count($Data["response"])!=0){
         echo '<form action="shop.php" method="get">';
         echo '請選擇你要購買的物品:<Br>';
         echo '<Select name="shopSelect">';
         for ($x=0; $x < count($Data["response"]); $x++) { 
             $json[$Data["response"][$x]["item"]]=$Data["response"][$x]["amount"];
-            echo '<Option Value='.$Data["response"][$x]["id"].'>"'."價格: ".$Data["response"][$x]["price"]." - 物品: ".$Data["response"][$x]["item"]." - 數量: ".$Data["response"][$x]["amount"]." - 賣家: ".$Data["response"][$x]["player"][0].'"</Option>';
+            echo '<Option Value='.$Data["response"][$x]["id"].'>"'."價格: ".$Data["response"][$x]["price"]." - 物品: ".BlockDecoder($Data["response"][$x]["item"])." - 數量: ".$Data["response"][$x]["amount"]." - 賣家: ".$Data["response"][$x]["player"][0].'"</Option>';
         }
         echo '</Select>';
         echo '<input type="Submit">';
         echo '</form>';
         }else{
-            echo '沒有待售商品';   
+            echo '沒有待售商品';  
+            echo '<p><a href="?action=back">返回</a></p>'; 
         }
+    }else{
+        echo '沒有待售商品'; 
+        echo '<p><a href="?action=back">返回</a></p>';  
+    }
 }else if(get('action') == 'sell') {
     $Data=post('{"Function":"serverData","FormatVersion":1,"ServerUUID":"'.$_SESSION["ServerUUID"].'","Type":"Inventory","Value":"'.$GLOBALS["user"]->id.'"}');
     if($Data["response"]!="No Player Inventory Data Found"){
@@ -49,22 +55,30 @@ if(get('action') == 'buy') {
     for ($x=0; $x < 35; $x++) { 
         if($Data["response"][$x]["item"]!="null"){
         $json[$Data["response"][$x]["item"]]=$Data["response"][$x]["amount"];
-        echo '<Option Value='.$Data["response"][$x]["item"].'>"'."物品: ".$Data["response"][$x]["item"]." - 數量: ".$Data["response"][$x]["amount"].'"</Option>';
+        echo '<Option Value='.$Data["response"][$x]["item"].'>"'."物品: ".BlockDecoder($Data["response"][$x]["item"])." - 數量: ".$Data["response"][$x]["amount"].'"</Option>';
         }
     }
     $_SESSION['sell']=$json;
     echo '</Select>';
     echo ' 價格: <input type="text" name="price"><br>';
+    if(count($json)==0){
+        echo '你沒有物品可以出售';
+        echo '<p><a href="?action=back">返回</a></p>';
+    }else{
     echo '<input type="Submit">';
+    }
     echo '</form>';
 }else{
     echo '沒有玩家數據';   
+    echo '<p><a href="?action=back">返回</a></p>';
 }
 }else if(!empty(get('sellSelect'))){
     if(empty(get('price'))){
         echo '價格不可為空';
+        echo '<p><a href="?action=back">返回</a></p>';
     }else if(!is_numeric(get('price'))){
         echo '價格必須為數字';
+        echo '<p><a href="?action=back">返回</a></p>';
     }else{
         echo '上架商店成功 - 待商品售出即可獲得積分';
         echo '<p><a href="?action=back">返回</a></p>';
@@ -72,8 +86,10 @@ if(get('action') == 'buy') {
     }
 }else if(!empty(get('shopSelect'))){
     $Data=post('{"Function":"serverData","Id":"'.get('shopSelect').'","FormatVersion":1,"ServerUUID":"'.$_SESSION["ServerUUID"].'","Type":"buy","Value":"'.$GLOBALS["user"]->id.'"}');
-   if($Data["response"]!="Success purchase"){
+   if($Data["response"]=="Success purchase"){
     echo '購買商品成功';
+   }else if($Data["response"]=="No Commodity ID Found"){
+    header('Location: shop.php?action='.$_SESSION["ServerUUID"]);
    }else{
     echo '購買商品失敗 - 積分不足';
    }
@@ -138,13 +154,13 @@ function post($Data){
     if($res["state"]=="Success"||$res["state"]=="Warn"){
         return $res;
     }else{
-        header('Location: /exptech/error.php?Function=post&Info='.$res["response"]);
+       // header('Location: /exptech/error.php?Function=post&Info='.$res["response"]);
     }
 }
 
 function BlockDecoder($Data){
     if($GLOBALS["BlockDecoder"]==null){
-    $url = "https://raw.githubusercontent.com/ExpTechTW/API/%E4%B8%BB%E8%A6%81%E7%9A%84-(main)/Json/BlockDecoder/zh-Hant-TW.json";
+    $url = "https://raw.githubusercontent.com/ExpTechTW/API/%E4%B8%BB%E8%A6%81%E7%9A%84-(main)/Json/BlockDecoder/zh-Hant-TW_simple.json";
     $curl = curl_init($url);
     curl_setopt($curl, CURLOPT_URL, $url);
     curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
@@ -164,6 +180,37 @@ function BlockDecoder($Data){
     }
 }else{
     if(empty($GLOBALS["BlockDecoder"][$Data])){
+    if($Data!="null"){
+    $url = "https://discord.com/api/webhooks/934735429939392522/OFACH06MbCAVCmehjQUIsXwCWcklpjeFVT6vCqx1kzZrMkWJxQGcdkq1s8zvTXE6LvWJ";    
+    $curl = curl_init($url);
+    $json=json_decode('{
+        "username": "ExpTech | 探索科技",
+        "avatar_url": "https://res.cloudinary.com/dh1luzdfd/image/upload/v1635819265/received_451346186125589_ii1lft.jpg",
+        "embeds": [
+          {
+            "author": {
+              "name": "📢自動反饋"
+            },
+            "title": "BlockDecoder-Simple",
+            "description": "",
+            "color": 4629503,
+            "footer": {
+              "text": "ExpTech 提供技術支持",
+              "icon_url": "https://res.cloudinary.com/dh1luzdfd/image/upload/v1635819265/received_451346186125589_ii1lft.jpg"
+            }
+          }
+        ]
+      }',true);
+    $json["embeds"][0]["description"]=$Data;
+    $data=json_encode($json);
+    curl_setopt($curl, CURLOPT_HEADER, false);
+    curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($curl, CURLOPT_HTTPHEADER, array("Content-type: application/json"));
+    curl_setopt($curl, CURLOPT_POST, true);
+    curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
+    curl_close($curl);
+    curl_exec($curl);
+    }
         return $Data;
     }else{
         return $GLOBALS["BlockDecoder"][$Data];

@@ -1,20 +1,12 @@
 <?php
-
-$filedata="C:/Users/whes1015/Desktop/ExpTech/Json/login.json";
-$fp=fopen($filedata,"r");
-$size=filesize($filedata);
-$txt=json_decode(fread($fp,$size),true);
-
-$APIkey=$txt["APIkey"];
-
     session_start();
     if (!empty($_SESSION['user'])) {
         $user=$_SESSION['user'];
-        echo '<div class="topcorner"><div class="box"><button type="button" class="standard" onclick="location.href="?action=logout"">登出</button></div></div>';
-        echo '<div class="topcorner-2"><div class="box"><button type="button" class="standard" onclick="location.href="?action=block"">方塊數據</button></div></div>';
-        echo '<div class="topcorner-3"><div class="box"><button type="button" class="standard" onclick="location.href="?action=economy"">經濟玩法</button></div></div>';
+        echo '<p><a href="?action=logout">登出</a></p>';
+        echo '<p><a href="?action=block">方塊數據</a></p>';
+        echo '<p><a href="?action=economy">經濟玩法</a></p>';
     }else{
-        echo '<div class="topcorner"><div class="box"><button type="button" class="standard" onclick="location.href="?action=login"">登入</button></div></div>';
+        echo '<p><a href="?action=login">登入</a></p>';
     }
 
     if(get('action') == 'login') {
@@ -47,44 +39,7 @@ $APIkey=$txt["APIkey"];
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="icon" type="image/png" href="images/head.ico">
-    <style>
-        .standard{
-            color:white;
-            background-color:hsl(193, 58%, 52%) ;
-            padding: 10px;
-            font-family: sans-serif;
-            margin: 50px ;
-            font-size: larger;
-            border-radius: 10px;
-        }
-        .container{
-            display: flex;
-            justify-content: center; 
-            align-items: center; 
-        }
-        .topcorner{
-            position:absolute;
-            top:0;
-            right:0;
-        }
-        .topcorner-2{
-            position:absolute;
-            top:0;
-            right: 80px;
-        }
-        .topcorner-3{
-            position:absolute;
-            top:0;
-            right:200px;
-        }
-    </style>
 </head>
-<body bgcolor="#b0deeb">
-    <br>
-    <br>
-    <br>
-    <div class="standard">
-        <h1>探索科技<br>Exptech</h1>
-    </div>
+<body>
 </body>
 </html>
