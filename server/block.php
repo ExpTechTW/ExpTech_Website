@@ -24,21 +24,25 @@ $BlockDecoder=null;
  
 echo '<table class="table table-bordered table-striped table-condensed"><tr><td>名稱</td><td>數量</td></tr>';
 
-$Data=post('{"Function":"serverData","FormatVersion":1,"Type":"BlockValue","Value":"'.$user->id.'"}');
+$Data=post('{"Function":"serverData","FormatVersion":1,"Type":"Statistic","Value":"'.$user->id.'"}');
 if($Data["response"]=="No Player Data Found"){
     echo '沒有找到玩家數據';
 }else{
+    //print_r($Data);
     main($Data);
 }
 
 function main($Data){
     for ($x=0; $x<count($Data["response"]); $x++) {
-        $name=BlockDecoder($Data["response"][$x]["name"]);
+        $name=$Data["response"][$x]["name"];
         $value=$Data["response"][$x]["value"];
-        echo '<tr><td>'.$name.'<td><td>'.$value.'<td></tr>';
+        if($name != "ENTITY_KILLED_BY" && $name != "KILL_ENTITY" && $name != "BREAK_ITEM" && $name != "DROP" && $name != "PICKUP" && $name != "CRAFT_ITEM" && $name != "MINE_BLOCK"){
+            $name=BlockDecoder($Data["response"][$x]["name"]);
+            echo '<tr><td>'.$name.'<td><td>'.$value.'<td></tr>';
+        }
       } 
       echo '</table>';
-      echo '<br>最後更新時間: '.$Data["addition"]["BlockTime"];
+      echo '<br>最後更新時間: '.$Data["addition"]["StatisticTime"];
 }
 
 function post($Data){
@@ -63,7 +67,7 @@ function post($Data){
 
      function BlockDecoder($Data){
         if($GLOBALS["BlockDecoder"]==null){
-        $url = "https://raw.githubusercontent.com/ExpTechTW/API/%E4%B8%BB%E8%A6%81%E7%9A%84-(main)/Json/BlockDecoder/zh-Hant-TW.json";
+        $url = "https://raw.githubusercontent.com/ExpTechTW/API/%E4%B8%BB%E8%A6%81%E7%9A%84-(main)/Json/server/block.json";
         $curl = curl_init($url);
         curl_setopt($curl, CURLOPT_URL, $url);
         curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
@@ -76,13 +80,17 @@ function post($Data){
         curl_close($curl);
         $data=json_decode(curl_exec($curl),true);
         $GLOBALS["BlockDecoder"]=$data;
-        if(empty($data[$Data])){
-            return $Data;
-        }else{
-            return $data[$Data];
+        for ($x=0; $x<count($data["Statistic"]); $x++) {
+            if($data["Statistic"][$x]["name"]==$Data){
+            return $data["Statistic"][$x]["zh-Hant-TW"];
+            }
         }
     }else{
-        if(empty($GLOBALS["BlockDecoder"][$Data])){
+        for ($x=0; $x<count($GLOBALS["BlockDecoder"]["Statistic"]); $x++) {
+            if($GLOBALS["BlockDecoder"]["Statistic"][$x]["name"]==$Data){
+            return $GLOBALS["BlockDecoder"]["Statistic"][$x]["zh-Hant-TW"];
+            }
+        }
             $url = "https://discord.com/api/webhooks/934735429939392522/OFACH06MbCAVCmehjQUIsXwCWcklpjeFVT6vCqx1kzZrMkWJxQGcdkq1s8zvTXE6LvWJ";    
                 $curl = curl_init($url);
                 $json=json_decode('{
@@ -112,10 +120,6 @@ function post($Data){
                 curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
                 curl_close($curl);
                 curl_exec($curl);
-            return $Data;
-        }else{
-            return $GLOBALS["BlockDecoder"][$Data];
-        } 
     }
      }
 ?>

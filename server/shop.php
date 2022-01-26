@@ -80,7 +80,7 @@ if(get('action') == 'buy') {
         echo '價格必須為數字';
         echo '<p><a href="?action=back">返回</a></p>';
     }else{
-        echo '上架商店成功 - 待商品售出即可獲得積分';
+        echo '上架商店成功 ( 注意: 若你當前不在線上，則系統會等到下次你上線時才將物品上架到商店 ) - 待商品售出即可獲得積分';
         echo '<p><a href="?action=back">返回</a></p>';
     $Data=post('{"Function":"serverData","Price":'.get('price').',"Item":"'.get('sellSelect').'","Amount":"'.$_SESSION['sell'][get('sellSelect')].'","FormatVersion":1,"ServerUUID":"'.$_SESSION["ServerUUID"].'","Type":"sell","Value":"'.$GLOBALS["user"]->id.'"}');
     }
@@ -103,38 +103,12 @@ Inventory();
 }
 function Inventory(){
     $_SESSION["ServerUUID"]=get('action');
-        $Data=post('{"Function":"serverData","FormatVersion":1,"ServerUUID":"'.get('action').'","Type":"Inventory","Value":"'.$GLOBALS["user"]->id.'"}');
-        if($Data["response"]!="No Player Inventory Data Found"){
-        echo '物品欄<br><br>';
-        echo '<table class="table table-bordered table-striped table-condensed"><tr><td>格子編號</td><td>物品</td><td>數量</td></tr>';
-        for ($x=0; $x<9; $x++) {
-            $name=BlockDecoder($Data["response"][$x]["item"]);
-            $value=$Data["response"][$x]["amount"];
-            $y=$x+1;
-            echo '<tr><td>'.$y.'<td><td>'.$name.'<td><td>'.$value.'<td></tr>';
-          } 
-          echo '</table>';
-          echo '<br>背包<br>';
-          echo '<table class="table table-bordered table-striped table-condensed"><tr><td>格子編號</td><td>物品</td><td>數量</td></tr>';
-        for ($x=9; $x<count($Data["response"]); $x++) {
-            if($x>35) break;
-            $name=BlockDecoder($Data["response"][$x]["item"]);
-            $value=$Data["response"][$x]["amount"];
-            $y=$x+1;
-            echo '<tr><td>'.$y.'<td><td>'.$name.'<td><td>'.$value.'<td></tr>';
-        } 
-        echo '<br>最後更新時間: '.$Data["addition"]["InventoryTime"];
-    }else{
-        echo '沒有玩家數據';   
-    }
+    $filepath= './image/'.$_SESSION["ServerUUID"].'_'.$GLOBALS["user"]->id.'.png'; 
+    echo '<img src="'.$filepath.'" height="500" width="500">'; 
 }
 
 function get($key, $default=NULL) {
     return array_key_exists($key, $_GET) ? $_GET[$key] : $default;
-}
-
-function main($Data){
-   
 }
 
 function post($Data){
