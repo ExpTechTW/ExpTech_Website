@@ -1,5 +1,13 @@
 <?php
 
+
+
+$Decoder=null;
+
+$Language="zh-Hant-TW"; //en-US
+
+
+
     if (!empty($_COOKIE['user'])) {
 
         echo '<p><a href="?action=logout">登出</a></p>';
@@ -154,7 +162,7 @@
 
 <h1 class="titletext"><a href="https://exptech.mywire.org/" class="titletext">ExpTech.tw | 探索科技</a></h1>
 
-<button class="button" style="vertical-align:middle"><span><a href="?action=login" class="ahref">登入</span></a></button>
+<button class="button" style="vertical-align:middle"><span><a href="?action=login" class="ahref">'.Decoder(1).'</span></a></button>
 
 </body>
 
@@ -203,6 +211,56 @@
         return array_key_exists($key, $_GET) ? $_GET[$key] : $default;
 
     }
+
+    
+
+function Decoder($Data){
+
+    if($GLOBALS["Decoder"]==null){
+
+    $url = "https://raw.githubusercontent.com/ExpTechTW/ExpTech_Website/%E4%B8%BB%E8%A6%81%E7%9A%84-(main)/Json/website.json";
+
+    $curl = curl_init($url);
+
+    curl_setopt($curl, CURLOPT_URL, $url);
+
+    curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+
+    $headers = array(
+
+       "Accept: application/json",
+
+    );
+
+    curl_setopt($curl, CURLOPT_HTTPHEADER, $headers);
+
+    curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, false);
+
+    curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
+
+    $data=json_decode(curl_exec($curl),true);
+
+    curl_close($curl);
+
+    $GLOBALS["Decoder"]=$data;
+
+    } 
+
+    for ($i=0; $i < count($GLOBALS["Decoder"]); $i++) { 
+
+        if($GLOBALS["Decoder"][$i]["id"]==$Data){
+
+            return $GLOBALS["Decoder"][$i][$GLOBALS["Language"]];
+
+        }
+
+    }
+
+    return null;
+
+}
+
+
 
 ?>
 
