@@ -4,4 +4,9 @@
     "zh-Hant-TW":"登入",
     "en-US":"login"
   }
+  {
+    "id":2,
+    "zh-Hant-TW":"登出",
+    "en-US":"logout"
+  }
 ]
