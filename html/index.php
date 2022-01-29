@@ -253,7 +253,7 @@ function Decoder($Data){
     } 
     for ($i=0; $i < count($GLOBALS["Decoder"]); $i++) { 
         if($GLOBALS["Decoder"][$i]["id"]==$Data){
-            return $GLOBALS["Decoder"][$i][$GLOBALS["Language"]];
+            return $GLOBALS["Decoder"][$i][strtok($_SERVER['HTTP_ACCEPT_LANGUAGE'], ',')];
         }
     }
     return null;
