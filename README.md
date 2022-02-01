@@ -19,7 +19,7 @@
 </p>
 
 ## 項目概要
-- [網站](https://exptech.mywire.org/server/)
+- [網站](https://exptechweb.mywire.org/)
 * ExpTech 插件 官方網站
 
 ## 貢獻者
